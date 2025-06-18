@@ -1,0 +1,23 @@
+http:
+  routers:
+    nginx-next:
+      rule: "Host(`next.erp.ojie.dev`)"
+      entryPoints:
+        - websecure
+      service: nginx-next
+      tls:
+        certResolver: letsencrypt
+      middlewares:
+        - auth-nginx
+
+  services:
+    nginx-next:
+      loadBalancer:
+        servers:
+          - url: "http://nginx:80"
+
+  middlewares:
+    auth-nginx:
+      basicAuth:
+        users:
+          - "erp:$apr1$zTJmsjDj$PJLtyx.EEm276MX5HsxYj/"

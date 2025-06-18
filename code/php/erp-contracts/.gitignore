@@ -1,0 +1,45 @@
+# Composer dependencies
+/vendor/
+
+# Node dependencies
+/node_modules/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# PHPStorm / VSCode / IDE files
+.idea/
+.vscode/
+
+# Environment files
+.env
+.env.*
+
+# Log files
+*.log
+
+# Cache
+/cache/
+*.cache
+
+# PHPUnit
+.phpunit.result.cache
+
+# Coverage reports
+coverage/
+
+# Build output
+/dist/
+build/
+
+# User-specific files
+*.swp
+*.swo
+
+# Composer lock file (optional, if not committed)
+/composer.lock
+
+# npm/yarn lock files (optional, if not committed)
+/package-lock.json
+/yarn.lock

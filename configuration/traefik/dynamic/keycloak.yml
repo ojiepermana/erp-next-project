@@ -1,0 +1,15 @@
+http:
+  routers:
+    keycloak:
+      rule: "Host(`keycloak.next.erp.ojie.dev`)"
+      entryPoints:
+        - websecure
+      service: keycloak
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    keycloak:
+      loadBalancer:
+        servers:
+          - url: "http://keycloak:8080"

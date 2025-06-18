@@ -1,0 +1,46 @@
+[
+    {
+        "id": "outline",
+        "realm": "outline",
+        "enabled": true,
+        "clients": [
+            {
+                "clientId": "outline",
+                "name": "Outline Wiki",
+                "enabled": true,
+                "protocol": "openid-connect",
+                "clientAuthenticatorType": "client-secret",
+                "secret": "outline-client-secret",
+                "redirectUris": [
+                    "https://outline.next.erp.ojie.dev/auth/oidc.callback"
+                ],
+                "webOrigins": [
+                    "https://outline.next.erp.ojie.dev"
+                ],
+                "standardFlowEnabled": true,
+                "implicitFlowEnabled": false,
+                "directAccessGrantsEnabled": false,
+                "serviceAccountsEnabled": false,
+                "publicClient": false,
+                "frontchannelLogout": true
+            }
+        ],
+        "users": [
+            {
+                "username": "erp",
+                "enabled": true,
+                "emailVerified": true,
+                "firstName": "ERP",
+                "lastName": "ETOS",
+                "email": "it@etos.co.id",
+                "credentials": [
+                    {
+                        "type": "password",
+                        "value": "erp2026",
+                        "temporary": false
+                    }
+                ]
+            }
+        ]
+    }
+]

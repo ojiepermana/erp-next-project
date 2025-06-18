@@ -1,0 +1,217 @@
+services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    command:
+      - --api.dashboard=true
+      - --log.level=DEBUG
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --providers.file.watch=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+
+      # TLS + Let's Encrypt
+      - --certificatesresolvers.letsencrypt.acme.email=it@etos.co.id
+      - --certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme.json
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./configuration/traefik/acme.json:/etc/traefik/acme.json
+      - ./configuration/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./configuration/traefik/dynamic:/etc/traefik/dynamic:ro
+    networks:
+      - development
+  
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - ./database/postgres:/var/lib/postgresql/data
+    env_file:
+      - ./configuration/postgres/.env
+    networks:
+      - development
+ 
+  # pgbouncer:
+  #   image: edoburu/pgbouncer:latest
+  #   container_name: pgbouncer
+  #   restart: unless-stopped
+  #   ports:
+  #     -  "${PGBOUNCER_PORT}:6432"
+  #   volumes:
+  #     - ./data/pgbouncer:/etc/pgbouncer:rw
+  #   depends_on:
+  #     - postgres
+  
+
+  mysql:
+    image: mysql:9.3
+    container_name: mysql
+    ports:
+      - "${MYSQL_PORT}:3306"
+    volumes:
+      - ./data/database/mysql:/var/lib/mysql
+    env_file:
+      - ./configuration/mysql/.env
+    networks:
+      - development
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - ./data/database/redis:/data
+    networks:
+      - development
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "${MONGODB_PORT}:27017"
+    volumes:
+      - ./data/database/mongodb:/data/db
+    env_file:
+      - ./configuration/mongodb/.env
+    networks:
+      - development
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    container_name: clickhouse
+    ports:
+      - "${CLICKHOUSE_PORT}:8123"
+    env_file:
+      - ./configuration/clickhouse/.env
+    volumes:
+      - ./data/database/clickhouse:/var/lib/clickhouse
+    networks:
+      - development
+    depends_on:
+      - traefik
+  n8n:
+    image: n8nio/n8n
+    container_name: n8n
+    volumes:
+      - ./data/app/n8n:/home/node/.n8n
+    env_file:
+      - ./configuration/n8n/.env
+    networks:
+      - development
+    depends_on:
+      - traefik
+      - postgres
+  minio:
+    image: minio/minio
+    container_name: minio
+    command: server /data --console-address ":9001"
+    env_file:
+      - ./configuration/minio/.env
+    volumes:
+      - ./data/bucket:/data
+    networks:
+      - development
+    depends_on:
+      - traefik
+  mailpit:
+    image: axllent/mailpit
+    container_name: mailpit
+    # ports:
+    #   - "${MAILPIT_PORT}:8025"
+    networks:
+      - development
+    depends_on:
+      - traefik
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./configuration/nginx/conf.d:/etc/nginx/conf.d
+      - ./code/laravel:/home/www-data
+      - ./data/hosting:/usr/share/nginx/html
+    networks:
+      - development
+    depends_on:
+      - traefik
+      - postgres
+      - mysql
+      - redis
+      - mongodb
+      - clickhouse
+      - n8n
+      - minio
+      - mailpit
+  php:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    container_name: php
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - mysql
+      - redis
+      - mongodb
+      - clickhouse
+      - n8n
+      - minio
+      - mailpit
+      - nginx
+    volumes:
+      - ./code/laravel:/var/www
+    networks:
+      - development
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    volumes:
+      - ./data/app/grafana:/var/lib/grafana
+    env_file:
+        - ./configuration/grafana/.env
+    networks:
+      - development
+    depends_on:
+      - traefik
+
+      
+  outline:
+    image: docker.getoutline.com/outlinewiki/outline:latest
+    container_name: outline
+    env_file:
+      - ./configuration/outline/.env
+    volumes:
+    - ./data/app/outline:/var/lib/outline/data
+    depends_on:
+      - postgres
+      - redis
+    # ports:
+    #   - "8083:3000"
+    networks:
+      - development
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    container_name: keycloak
+    command: start-dev --import-realm
+    # ports:
+    #   - "8080:8080"
+    env_file:
+      - ./configuration/keycloak/.env
+    volumes:
+      - ./configuration/keycloak/realm:/opt/keycloak/data/import
+    networks:
+      - development
+    depends_on:
+      - traefik
+
+networks:
+  development:
+    external: true

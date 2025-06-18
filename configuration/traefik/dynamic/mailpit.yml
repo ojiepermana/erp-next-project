@@ -1,0 +1,15 @@
+http:
+  routers:
+    mailpit:
+      rule: "Host(`mail.next.erp.ojie.dev`)"
+      entryPoints:
+        - websecure
+      service: mailpit
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    mailpit:
+      loadBalancer:
+        servers:
+          - url: "http://mailpit:8025"

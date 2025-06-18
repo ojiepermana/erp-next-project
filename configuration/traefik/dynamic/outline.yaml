@@ -1,0 +1,15 @@
+http:
+  routers:
+    outline:
+      rule: "Host(`outline.next.erp.ojie.dev`)"
+      entryPoints:
+        - websecure
+      service: outline
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    outline:
+      loadBalancer:
+        servers:
+          - url: "http://outline:3000"

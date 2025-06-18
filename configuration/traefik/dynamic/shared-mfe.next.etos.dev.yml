@@ -1,0 +1,15 @@
+http:
+  routers:
+    hosting-shared-mfe:
+      rule: "Host(`shared-mfe.next.erp.ojie.dev`)"
+      entryPoints:
+        - websecure
+      service: hosting-shared-mfe
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    hosting-shared-mfe:
+      loadBalancer:
+        servers:
+          - url: "http://nginx:81"

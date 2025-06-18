@@ -1,0 +1,15 @@
+http:
+  routers:
+    minio-console:
+      rule: "Host(`minio.next.erp.ojie.dev`)"
+      entryPoints:
+        - websecure
+      service: minio-console
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    minio-console:
+      loadBalancer:
+        servers:
+          - url: "http://minio:9001"
