@@ -16,7 +16,6 @@ git pull --recurse-submodules <br />
 git submodule update --remote
 
 ## Micro Frontend - Angular
-git submodule add --branch main  https://github.com/erp-next-step/shared-mfe.git code/angular/mfe/shared <br />
 
 
 ## App Frontend - Angular
@@ -28,7 +27,7 @@ git submodule add --branch main https://github.com/erp-next-step/auth-services.g
 
 
 ## App - Laravel
-git submodule add --branch main  https://github.com/erp-next-step/migrations.git code/laravel/app/migrations <br />
+git submodule add --branch main  https://github.com/ojie-dev/rondles-erp-migration.git code/laravel/app/migrations <br />
 
 ## Library
 git submodule add --branch main  https://github.com/erp-next-step/erp-contracts.git code/php/erp-contracts <br />

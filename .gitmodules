@@ -2,11 +2,11 @@
 	path = code/laravel/services/auth
 	url = https://github.com/erp-next-step/auth-services.git
 	branch = main
-[submodule "code/laravel/app/migrations"]
-	path = code/laravel/app/migrations
-	url = https://github.com/erp-next-step/migrations.git
-	branch = main
 [submodule "code/php/erp-contracts"]
 	path = code/php/erp-contracts
 	url = https://github.com/erp-next-step/erp-contracts.git
+	branch = main
+[submodule "code/laravel/app/migrations"]
+	path = code/laravel/app/migrations
+	url = https://github.com/ojie-dev/rondles-erp-migration.git
 	branch = main
